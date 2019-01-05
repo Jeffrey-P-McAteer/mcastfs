@@ -87,12 +87,25 @@ fn sanitize_args(args: &Args) {
 
 fn do_client(args: &Args) {
   let socket = UdpSocket::bind("0.0.0.0:2121").expect("couldn't bind to 0.0.0.0:2121");
+  socket.set_read_timeout(Some(Duration::from_millis(1200))).expect("Could not set timeout to 1200ms");
   
   let json_str = serde_json::to_string(&args.arg_args).expect("Could not go from Vec<String> to JSON");
   
   socket.send_to(&json_str.as_bytes(), format!("{}:{}", args.flag_group4, args.flag_port)).expect("");
   
-  
+  let mut buf = [0u8; 8 * 1024];
+  match socket.recv_from(&mut buf) {
+    Ok((len, _remote_addr)) => {
+      let data = &buf[..len];
+      let data = String::from_utf8_lossy(data);
+      
+      println!("Got back from server: {}", data);
+      
+    }
+    Err(err) => {
+      println!("Client got an error: {}", err);
+    }
+  }
   
 }
 
@@ -120,7 +133,7 @@ fn do_serve(args: &Args) {
         
         let client_args: Vec<String> = serde_json::from_str(&parsed_json).expect("Could not parse Vec<String> from json");
         
-        println!("client_args={:?}", client_args);
+        perform_command(&args, &client_args, &remote_addr);
         
       }
       Err(_err) => {
@@ -130,6 +143,27 @@ fn do_serve(args: &Args) {
     }
   }
 
+  
+}
+
+fn perform_command(args: &Args, client_args: &Vec<String>, remote_addr: &SockAddr) {
+  if client_args.len() < 1 {
+    return;
+  }
+  
+  let socket = UdpSocket::bind("0.0.0.0:2122").expect("couldn't bind to 0.0.0.0:2122");
+  
+  
+  match client_args[0].as_str() {
+    "ls" => {
+      socket.send_to("Some data".as_bytes(), remote_addr.as_inet().expect("Not an ipv4 client") ).expect("");
+      
+    }
+    
+    _unk => {
+      println!("unknown client_args={:?}", client_args);
+    }
+  }
   
 }
 
