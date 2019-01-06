@@ -22,4 +22,44 @@ Servers listen to a multicast address, clients multicast requests, servers unica
  - [ ] Make binary file transfers a possibility
  - [ ] For large files (>50mb) implement the rsync delta transfer algorithm, make clients pick file to do deltas against
 
+# Usage
 
+## Server
+
+```bash
+cargo build --release
+./target/release/mcastfs serve ./src/
+```
+
+## Client
+
+```bash
+cargo build --release
+./target/release/mcastfs client ls
+# All servers will report like:
+From host azure-angel:
+4.1 kB - "./src"
+8.0 kB - "./src/main.rs"
+
+```
+
+## Help text
+
+```
+A networked filesystem operating over multicast.
+The goal is to make sharing of files over a LAN as simple and trivial as possible.
+
+Usage:
+  mcastfs client [--group4=<group4>] [--port=<port>] [--ctimeout=<ctimeout>] <args>...
+  mcastfs serve  [--group4=<group4>] [--port=<port>] [--hostname=<hostname>] <args>...
+  mcastfs (-h | --help)
+  mcastfs --version
+
+Options:
+  -h --help              Show this screen.
+  --version              Show version.
+  --group4=<group4>      Multicast IP [default: 224.0.21.12].
+  --port=<port>          Multicast Port [default: 2112].
+  --hostname=<hostname>  Hostname override.
+  --ctimeout=<ctimeout>  Client receive timeout ms [default: 400]
+```
