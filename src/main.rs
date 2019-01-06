@@ -272,6 +272,7 @@ fn file_is_under_trusted_dir(untrusted_file: &String, trusted_dirs: &Vec<String>
   }
   
   for dir in trusted_dirs {
+    // TODO make this better
     if untrusted_file.starts_with(dir) {
       return true;
     }
