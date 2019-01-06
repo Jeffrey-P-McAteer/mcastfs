@@ -43,6 +43,16 @@ From host azure-angel:
 
 ```
 
+## Compiling a static binary
+
+```bash
+cargo build --release --target=x86_64-unknown-linux-musl
+ldd target/x86_64-unknown-linux-musl/release/mcastfs
+  not a dynamic executable
+# target/x86_64-unknown-linux-musl/release/mcastfs can be copied and run
+# on any 64 bit linux system without needing dependencies
+```
+
 ## Help text
 
 ```
