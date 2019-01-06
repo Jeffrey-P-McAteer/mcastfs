@@ -14,4 +14,7 @@ socket2 = { version = "0.3.4", features = ["reuseport"] }
 
 hostname = "^0.1"
 
+walkdir = "2"
+
+number_prefix = "0.2"
 
